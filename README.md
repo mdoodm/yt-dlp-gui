@@ -24,13 +24,13 @@ A dark-themed Windows desktop app for [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 ## Requirements
 
 - Windows 10 or 11 (64-bit).
-- To run from source: Python 3.10+ with Tkinter (included in the python.org installer). The app has no third-party Python dependencies.
+- To run from source: Python 3.10+ with Tkinter (included in the python.org installer). The app uses only the standard library, so there's no `requirements.txt`. `requirements-build.txt` lists what's needed to build the exe.
 
 ## Getting started
 
 ### Option A: the standalone exe
 
-1. Build it (see below) or download `yt-dlp GUI.exe` from this repo's Releases.
+1. Build it (see below) or download `yt-dlp-GUI.exe` from this repo's Releases.
 2. Put it in a folder of its own, e.g. `C:\Tools\yt-dlp GUI\`, and run it.
 3. On first run, open the **Setup** tab and click **Install selected** to fetch ffmpeg and Deno (about 250 MB). yt-dlp is already bundled.
 
@@ -50,9 +50,9 @@ Double-clicking `yt_dlp_gui.pyw` also works. Use the **Setup** tab to install yt
 
 Double-click **`build.bat`**, or run `build.bat /nopause` from a terminal. It will:
 
-1. create an isolated build environment in `.build-venv\` and install PyInstaller into it;
+1. create an isolated build environment in `.build-venv\` and install the pinned PyInstaller from `requirements-build.txt`;
 2. download `bin\yt-dlp.exe` if it isn't already there;
-3. build `dist\yt-dlp GUI.exe`, a single file of about 32 MB with yt-dlp and the icon bundled.
+3. build `dist\yt-dlp-GUI.exe`, a single file of about 32 MB with yt-dlp and the icon bundled.
 
 Your system Python packages are not touched.
 
@@ -72,10 +72,11 @@ YouTube now requires a JavaScript runtime to unlock most formats, and yt-dlp use
 ## Project layout
 
 ```
-yt_dlp_gui.pyw   the whole app (Tkinter, standard library only)
-build.bat        builds dist\yt-dlp GUI.exe with PyInstaller
-icon.ico         app icon
-docs/            screenshots for this README
+yt_dlp_gui.pyw          the whole app (Tkinter, standard library only)
+build.bat               builds dist\yt-dlp-GUI.exe with PyInstaller
+requirements-build.txt  build-only dependency (PyInstaller, pinned)
+icon.ico                app icon
+docs/                   screenshots for this README
 ```
 
 ## Third-party software

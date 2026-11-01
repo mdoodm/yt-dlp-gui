@@ -1,5 +1,5 @@
 @echo off
-rem Builds "dist\yt-dlp GUI.exe" - a single standalone exe with yt-dlp.exe bundled inside.
+rem Builds "dist\yt-dlp-GUI.exe" - a single standalone exe with yt-dlp.exe bundled inside.
 rem Usage: double-click, or run "build.bat /nopause" from a script.
 setlocal
 cd /d "%~dp0"
@@ -12,7 +12,7 @@ if not exist "%VENV%\Scripts\python.exe" (
 )
 
 echo Installing / updating PyInstaller...
-"%VENV%\Scripts\python.exe" -m pip install --quiet --disable-pip-version-check --upgrade pyinstaller || goto :fail
+"%VENV%\Scripts\python.exe" -m pip install --quiet --disable-pip-version-check -r "%ROOT%requirements-build.txt" || goto :fail
 
 if not exist "%ROOT%bin\yt-dlp.exe" (
     echo Downloading yt-dlp.exe...
@@ -22,7 +22,7 @@ if not exist "%ROOT%bin\yt-dlp.exe" (
 
 echo Building...
 "%VENV%\Scripts\python.exe" -m PyInstaller --noconfirm --onefile --windowed ^
-    --name "yt-dlp GUI" ^
+    --name "yt-dlp-GUI" ^
     --icon "%ROOT%icon.ico" ^
     --add-data "%ROOT%bin\yt-dlp.exe;." ^
     --add-data "%ROOT%icon.ico;." ^
@@ -30,7 +30,7 @@ echo Building...
     "%ROOT%yt_dlp_gui.pyw" || goto :fail
 
 echo.
-echo SUCCESS: built "%ROOT%dist\yt-dlp GUI.exe"
+echo SUCCESS: built "%ROOT%dist\yt-dlp-GUI.exe"
 set "RC=0"
 goto :end
 
