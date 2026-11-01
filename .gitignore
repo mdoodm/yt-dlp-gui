@@ -1,0 +1,18 @@
+# Build output and build environment (recreate with build.bat)
+dist/
+.build/
+.build-venv/
+*.spec
+
+# Downloaded tools: yt-dlp, ffmpeg and Deno are fetched by build.bat or the app's Setup tab
+bin/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
