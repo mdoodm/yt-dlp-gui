@@ -28,13 +28,15 @@ A dark-themed Windows desktop app for [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
 ## Getting started
 
-### Option A: the standalone exe
+### Option A: the prebuilt app
 
-1. Build it (see below) or download `yt-dlp-GUI.exe` from this repo's Releases.
-2. Put it in a folder of its own, e.g. `C:\Tools\yt-dlp GUI\`, and run it.
-3. On first run, open the **Setup** tab and click **Install selected** to fetch ffmpeg and Deno (about 250 MB). yt-dlp is already bundled.
+1. Build it (see below) or download `yt-dlp-GUI-win64.zip` from this repo's Releases.
+2. Extract it somewhere you can write to, e.g. `C:\Tools\`, and run `yt-dlp-GUI\yt-dlp-GUI.exe`.
+3. On first run, open the **Setup** tab and click **Install selected** to fetch ffmpeg and Deno (about 250 MB). yt-dlp is already included in `bin\`.
 
 Windows SmartScreen may warn you because the exe is unsigned. Choose **More info → Run anyway**.
+
+The app ships as a folder rather than a single exe on purpose. A single-file exe has to unpack about 2,000 files into `%TEMP%` every time it starts, which antivirus scanners and sandbox reports (e.g. VirusTotal) flag as "dropping files". The folder version starts faster and writes nothing at startup.
 
 ### Option B: run from source
 
@@ -46,13 +48,16 @@ pythonw yt_dlp_gui.pyw
 
 Double-clicking `yt_dlp_gui.pyw` also works. Use the **Setup** tab to install yt-dlp, ffmpeg and Deno.
 
-## Building the exe
+## Building
 
 Double-click **`build.bat`**, or run `build.bat /nopause` from a terminal. It will:
 
 1. create an isolated build environment in `.build-venv\` and install the pinned PyInstaller from `requirements-build.txt`;
 2. download `bin\yt-dlp.exe` if it isn't already there;
-3. build `dist\yt-dlp-GUI.exe`, a single file of about 32 MB with yt-dlp and the icon bundled.
+3. build the app folder `dist\yt-dlp-GUI\` (`yt-dlp-GUI.exe`, its `_internal\` files, and yt-dlp in `bin\`);
+4. zip it as `dist\yt-dlp-GUI-win64.zip` (about 33 MB), ready to share.
+
+Want a single portable exe instead? Run **`build.bat /onefile`** to get `dist\yt-dlp-GUI.exe` (about 32 MB) with yt-dlp bundled inside. It's more convenient to carry around, but it unpacks itself to `%TEMP%` on every launch (see above).
 
 Your system Python packages are not touched.
 

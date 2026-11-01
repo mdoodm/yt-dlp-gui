@@ -1,10 +1,21 @@
 @echo off
-rem Builds "dist\yt-dlp-GUI.exe" - a single standalone exe with yt-dlp.exe bundled inside.
-rem Usage: double-click, or run "build.bat /nopause" from a script.
+rem Builds yt-dlp GUI with PyInstaller.
+rem
+rem   build.bat            Folder build (recommended): dist\yt-dlp-GUI\ and dist\yt-dlp-GUI-win64.zip.
+rem                        Nothing is unpacked at startup, so antivirus/sandbox reports stay quiet.
+rem   build.bat /onefile   Single self-extracting dist\yt-dlp-GUI.exe with yt-dlp bundled inside.
+rem
+rem Add /nopause to skip the final pause when running from a script.
 setlocal
 cd /d "%~dp0"
 set "ROOT=%~dp0"
 set "VENV=%ROOT%.build-venv"
+set "ONEFILE="
+set "NOPAUSE="
+for %%A in (%*) do (
+    if /i "%%~A"=="/onefile" set "ONEFILE=1"
+    if /i "%%~A"=="/nopause" set "NOPAUSE=1"
+)
 
 if not exist "%VENV%\Scripts\python.exe" (
     echo Creating build environment...
@@ -20,13 +31,38 @@ if not exist "%ROOT%bin\yt-dlp.exe" (
     curl.exe -L --fail -o "%ROOT%bin\yt-dlp.exe" https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe || goto :fail
 )
 
-echo Building...
+if defined ONEFILE goto :onefile
+
+echo Building folder version...
+"%VENV%\Scripts\python.exe" -m PyInstaller --noconfirm --onedir --windowed ^
+    --name "yt-dlp-GUI" ^
+    --icon "%ROOT%icon.ico" ^
+    --add-data "%ROOT%icon.ico;." ^
+    --distpath "%ROOT%dist" --workpath "%ROOT%.build\work-onedir" --specpath "%ROOT%.build" ^
+    "%ROOT%yt_dlp_gui.pyw" || goto :fail
+
+rem yt-dlp ships ready to use in bin\, where the app looks first and can update it in place
+mkdir "%ROOT%dist\yt-dlp-GUI\bin" 2>nul
+copy /y "%ROOT%bin\yt-dlp.exe" "%ROOT%dist\yt-dlp-GUI\bin\" >nul || goto :fail
+
+echo Zipping...
+if exist "%ROOT%dist\yt-dlp-GUI-win64.zip" del "%ROOT%dist\yt-dlp-GUI-win64.zip"
+"%VENV%\Scripts\python.exe" -c "import shutil; shutil.make_archive(r'%ROOT%dist\yt-dlp-GUI-win64', 'zip', r'%ROOT%dist', 'yt-dlp-GUI')" || goto :fail
+
+echo.
+echo SUCCESS: built "%ROOT%dist\yt-dlp-GUI\yt-dlp-GUI.exe"
+echo          and   "%ROOT%dist\yt-dlp-GUI-win64.zip"
+set "RC=0"
+goto :end
+
+:onefile
+echo Building single-file version...
 "%VENV%\Scripts\python.exe" -m PyInstaller --noconfirm --onefile --windowed ^
     --name "yt-dlp-GUI" ^
     --icon "%ROOT%icon.ico" ^
     --add-data "%ROOT%bin\yt-dlp.exe;." ^
     --add-data "%ROOT%icon.ico;." ^
-    --distpath "%ROOT%dist" --workpath "%ROOT%.build\work" --specpath "%ROOT%.build" ^
+    --distpath "%ROOT%dist" --workpath "%ROOT%.build\work-onefile" --specpath "%ROOT%.build" ^
     "%ROOT%yt_dlp_gui.pyw" || goto :fail
 
 echo.
@@ -40,5 +76,5 @@ echo BUILD FAILED - see the messages above.
 set "RC=1"
 
 :end
-if /i not "%~1"=="/nopause" pause
+if not defined NOPAUSE pause
 exit /b %RC%
