@@ -78,7 +78,7 @@ YouTube now requires a JavaScript runtime to unlock most formats, and yt-dlp use
 
 ```
 yt_dlp_gui.pyw          the whole app (Tkinter, standard library only)
-build.bat               builds dist\yt-dlp-GUI.exe with PyInstaller
+build.bat               builds dist\yt-dlp-GUI\ and its zip (or one exe with /onefile)
 requirements-build.txt  build-only dependency (PyInstaller, pinned)
 icon.ico                app icon
 docs/                   screenshots for this README
